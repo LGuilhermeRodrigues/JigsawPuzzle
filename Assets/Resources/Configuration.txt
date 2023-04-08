@@ -1,0 +1,8 @@
+ePuzzle HorizontalSize 3
+
+ePuzzle VerticalSize 3
+
+ePuzzle AspectRatio Square
+Options = Square, Landscape, Portrait, Widescreen
+
+ePuzzle Image cat
