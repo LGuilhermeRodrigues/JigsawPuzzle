@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMPro.Examples;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -102,8 +104,7 @@ public class ePuzzleManager : MonoBehaviour
                 Debug.Log($"List: The name {puzzlePiece.name} is already in the list");
             }
         }
-        //GenerateJigsawPuzzleMatrix(Configuration.ePuzzleHorizontalSize, Configuration.ePuzzleVerticalSize);
-        GenerateJigsawPuzzleMatrix(5, 5);
+        GenerateJigsawPuzzleMatrix(Configuration.ePuzzleHorizontalSize, Configuration.ePuzzleVerticalSize);
     }
 
     private void SetBackgroundTransparency()
@@ -120,14 +121,29 @@ public class ePuzzleManager : MonoBehaviour
             for (var j = 0; j < Configuration.ePuzzleVerticalSize; j++)
             {
                 var piece = Instantiate(_puzzlePiece, _canvas.transform);
+                
                 // Set the name of the piece
                 piece.name = $"Piece {i} {j}";
+                
+                
+                
                 // Set the size of the piece
                 piece.GetComponent<RectTransform>().sizeDelta = new Vector2(
-                    _imageSize.x / Configuration.ePuzzleHorizontalSize, 
-                    _imageSize.y / Configuration.ePuzzleVerticalSize);
+                    1*_imageSize.x / Configuration.ePuzzleHorizontalSize, 
+                    1*_imageSize.y / Configuration.ePuzzleVerticalSize);
+                
                 // Resize the boxCollider
-                piece.GetComponent<BoxColliderResizer>().ResizeBoxCollider();
+                //piece.GetComponent<BoxColliderResizer>().ResizeBoxCollider();
+                BoxCollider2D boxCollider = piece.GetComponent<BoxCollider2D>();
+                Vector2 imageSize = piece.GetComponent<RectTransform>().sizeDelta;
+                boxCollider.size = new Vector2(imageSize.x, imageSize.y);
+                boxCollider.offset = new Vector2(imageSize.x / 2, -imageSize.y / 2);
+                
+                // Set the size of the piece
+                piece.GetComponent<RectTransform>().sizeDelta = new Vector2(
+                    1.55f*_imageSize.x / Configuration.ePuzzleHorizontalSize, 
+                    1.55f*_imageSize.y / Configuration.ePuzzleVerticalSize);
+                
                 // Set the position of the piece
                 piece.GetComponent<RectTransform>().localPosition = new Vector2(
                     _imageSize.x / Configuration.ePuzzleHorizontalSize * i,
@@ -138,6 +154,16 @@ public class ePuzzleManager : MonoBehaviour
                     localPosition.y,
                     0);
                 piece.transform.localPosition = localPosition;
+                
+                // offset problem
+                var offset = (0.55f*_imageSize.x / Configuration.ePuzzleHorizontalSize) /2;
+                localPosition = new Vector3(
+                    localPosition.x - offset,
+                    localPosition.y + offset,
+                    localPosition.z);
+                piece.transform.localPosition = localPosition;
+                boxCollider.offset = new Vector2(boxCollider.offset.x + offset, boxCollider.offset.y - offset);
+                
                 var pieceViewport = Instantiate(_imageViewportParent, _canvas.transform);
                 pieceViewport.transform.parent = piece.transform;
             }

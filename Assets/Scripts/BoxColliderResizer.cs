@@ -14,5 +14,6 @@ public class BoxColliderResizer : MonoBehaviour
         boxCollider.size = new Vector2(imageSize.x, imageSize.y);
         // Set the center of the box collider
         boxCollider.offset = new Vector2(imageSize.x / 2, -imageSize.y / 2);
+        
     }
 }
