@@ -25,7 +25,7 @@ public class FileManager : MonoBehaviour
             // Read the file
             string[] lines = File.ReadAllLines(currentPath);
             
-            string[] variablesName = { "ePuzzleHorizontalSize", "ePuzzleVerticalSize","ePuzzleAspectRatio", "ePuzzleImage" };
+            string[] variablesName = { "ePuzzleHorizontalSize", "ePuzzleVerticalSize","ePuzzleAspectRatio", "ePuzzleImage", "ePuzzleImageTransparency" };
             
             // Each line have the format: "gameName configName Value" (e.g. "ePuzzle HorizontalSize 3")
             foreach (string line in lines)
@@ -56,6 +56,9 @@ public class FileManager : MonoBehaviour
                                 break;
                             case "ePuzzleImage":
                                 Configuration.ePuzzleImage = words[2];
+                                break;
+                            case "ePuzzleImageTransparency":
+                                Configuration.ePuzzleImageTransparency = float.Parse(words[2]);
                                 break;
                         }
                     }

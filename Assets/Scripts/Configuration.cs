@@ -8,7 +8,8 @@ public static class Configuration
     public static int ePuzzleVerticalSize = 3;
     public static AspectRatio ePuzzleAspectRatio = AspectRatio.Square;
     public static string ePuzzleImage = "beach";
-    
+    public static float ePuzzleImageTransparency = 0.5f;
+
     public enum AspectRatio
     {
         Square,

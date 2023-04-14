@@ -6,3 +6,5 @@ ePuzzle AspectRatio Square
 Options = Square, Landscape, Portrait, Widescreen
 
 ePuzzle Image cat
+
+ePuzzle ImageTransparency 0.4
