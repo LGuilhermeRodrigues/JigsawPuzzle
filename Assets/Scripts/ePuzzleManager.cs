@@ -18,7 +18,6 @@ public class ePuzzleManager : MonoBehaviour
     Vector2 _imageSize;
     [SerializeField] private GameObject _puzzlePiece;
     [SerializeField] private GameObject _canvas;
-    [SerializeField] private GameObject _puzzlePieceViewport;
     [SerializeField] private List<Sprite> _puzzlePieces;
     private List<string> _puzzlePiecesNames = new();
     private Dictionary<string, Sprite> puzzlePieces = new();
@@ -30,67 +29,7 @@ public class ePuzzleManager : MonoBehaviour
         LoadImage();
         CreatePieces();
         SetBackgroundTransparency();
-
-        /*var _puzzlePiecesExtended = new List<Sprite>();
-        foreach (var sprite in _puzzlePieces)
-        {
-            var up = sprite.name[0].ToString();
-            var right = sprite.name[1].ToString();
-            var down = sprite.name[2].ToString();
-            var left = sprite.name[3].ToString();
-            var filename = $"OriginalSprite";
-            var countCopy = 0;
-            while (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png")))
-                filename = $"OriginalSprite({countCopy++})";
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png");
-            var bytes = sprite.texture.EncodeToPNG();
-            //File.WriteAllBytes(path, bytes);
-            _puzzlePiecesExtended.Add(sprite);
-            // generate a 90 rotated sprite
-            var rotatedSprite = RotatePiece(sprite);
-            rotatedSprite.name = $"{left}{up}{right}{down}";
-            _puzzlePiecesExtended.Add(rotatedSprite);
-            // Save the rotatedSprite Into the computer local storage
-            filename = $"RotatedSprite";
-            countCopy = 0;
-            while (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png")))
-                filename = $"RotatedSprite({countCopy++})";
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png");
-            bytes = rotatedSprite.texture.EncodeToPNG();
-            File.WriteAllBytes(path, bytes);
-            // generate a 180 rotated sprite
-            rotatedSprite = RotatePiece(rotatedSprite);
-            rotatedSprite.name = $"{down}{left}{up}{right}";
-            while (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png")))
-                filename = $"RotatedSprite({countCopy++})";
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png");
-            bytes = rotatedSprite.texture.EncodeToPNG();
-            File.WriteAllBytes(path, bytes);
-            _puzzlePiecesExtended.Add(rotatedSprite);
-            // generate a 270 rotated sprite
-            rotatedSprite = RotatePiece(rotatedSprite);
-            rotatedSprite.name = $"{right}{down}{left}{up}";
-            while (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png")))
-                filename = $"RotatedSprite({countCopy++})";
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png");
-            bytes = rotatedSprite.texture.EncodeToPNG();
-            File.WriteAllBytes(path, bytes);
-            _puzzlePiecesExtended.Add(rotatedSprite);
-            // generate a 360 rotated sprite
-            filename = $"OriginalSprite";
-            countCopy = 0;
-            rotatedSprite = RotatePiece(rotatedSprite);
-            rotatedSprite.name = $"{up}{right}{down}{left}";
-            while (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png")))
-                filename = $"OriginalSprite({countCopy++})";
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{filename}.png");
-            bytes = rotatedSprite.texture.EncodeToPNG();
-            File.WriteAllBytes(path, bytes);
-            //_puzzlePiecesExtended.Add(rotatedSprite);
-        }*/
-        
-        // Create the dictionary
-        //foreach (var puzzlePiece in _puzzlePiecesExtended)
+        // Create the dictionary with the puzzle pieces to get them by code
         foreach (var puzzlePiece in _puzzlePieces)
         {
             var pieceCode = puzzlePiece.name;
@@ -125,15 +64,12 @@ public class ePuzzleManager : MonoBehaviour
                 // Set the name of the piece
                 piece.name = $"Piece {i} {j}";
                 
-                
-                
                 // Set the size of the piece
                 piece.GetComponent<RectTransform>().sizeDelta = new Vector2(
                     1*_imageSize.x / Configuration.ePuzzleHorizontalSize, 
                     1*_imageSize.y / Configuration.ePuzzleVerticalSize);
                 
                 // Resize the boxCollider
-                //piece.GetComponent<BoxColliderResizer>().ResizeBoxCollider();
                 BoxCollider2D boxCollider = piece.GetComponent<BoxCollider2D>();
                 Vector2 imageSize = piece.GetComponent<RectTransform>().sizeDelta;
                 boxCollider.size = new Vector2(imageSize.x, imageSize.y);
@@ -225,7 +161,7 @@ public class ePuzzleManager : MonoBehaviour
         return resizedTexture;
     }
     
-    public void ResizeImage()
+    private void ResizeImage()
     {
         Debug.Log($"Resizing Image to {Configuration.ePuzzleAspectRatio}");
         RectTransform rectTransform = _imageViewport.GetComponent<RectTransform>();
@@ -250,207 +186,25 @@ public class ePuzzleManager : MonoBehaviour
         }
         _imageSize = rectTransform.sizeDelta;
     }
-
-    private Sprite RotatePiece(Sprite piece, int angle = 90, bool clockwise = true)
-    {
-        if (angle == 90)
-        {
-            var texture_ = new Texture2D((int)piece.rect.width, (int)piece.rect.height);
-            var pixels_ = piece.texture.GetPixels((int)piece.rect.x, (int)piece.rect.y, (int)piece.rect.width, (int)piece.rect.height);
-            for (var i = 0; i < texture_.width; i++)
-            {
-                for (var j = 0; j < texture_.height; j++)
-                {
-                    texture_.SetPixel(j, texture_.width - i - 1, pixels_[i * texture_.width + j]);
-                }
-            }
-            texture_.Apply();
-            var rotatedSprite_ = Sprite.Create(texture_, new Rect(0, 0, texture_.width, texture_.height), Vector2.zero);
-            return rotatedSprite_;
-        }
-        
-        if (clockwise)
-        {
-            Debug.Log($"Rotating piece {piece.name} by {angle} degrees clockwise");
-        }
-        else
-        {
-            Debug.Log($"Rotating piece {piece.name} by {angle} degrees counter-clockwise");
-        }
-        if (angle == 0)
-        {
-            return piece;
-        }
-        // Create a new texture
-        var texture = new Texture2D((int)piece.rect.width, (int)piece.rect.height);
-        // Get the pixels of the sprite
-        var pixels = piece.texture.GetPixels((int)piece.rect.x, (int)piece.rect.y, (int)piece.rect.width, (int)piece.rect.height);
-        // Rotate the pixels
-        switch (angle)
-        {
-            case 90:
-                if (clockwise)
-                {
-                    for (var i = 0; i < texture.width; i++)
-                    {
-                        for (var j = 0; j < texture.height; j++)
-                        {
-                            texture.SetPixel(i, j, pixels[(texture.height - 1 - j) * texture.width + i]);
-                        }
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < texture.width; i++)
-                    {
-                        for (var j = 0; j < texture.height; j++)
-                        {
-                            texture.SetPixel(i, j, pixels[j * texture.width + (texture.height - 1 - i)]);
-                        }
-                    }
-                }
-                break;
-            case 180:
-                for (var i = 0; i < texture.width; i++)
-                {
-                    for (var j = 0; j < texture.height; j++)
-                    {
-                        texture.SetPixel(i, j, pixels[(texture.width - 1 - i) + (texture.height - 1 - j) * texture.width]);
-                    }
-                }
-                break;
-            case 270:
-                if (clockwise)
-                {
-                    for (var i = 0; i < texture.width; i++)
-                    {
-                        for (var j = 0; j < texture.height; j++)
-                        {
-                            texture.SetPixel(i, j, pixels[j * texture.width + (texture.height - 1 - i)]);
-                        }
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < texture.width; i++)
-                    {
-                        for (var j = 0; j < texture.height; j++)
-                        {
-                            texture.SetPixel(i, j, pixels[(texture.height - 1 - j) * texture.width + i]);
-                        }
-                    }
-                }
-                break;
-        }
-        // Apply the pixels to the texture
-        texture.Apply();
-        // Create a new sprite
-        var rotatedSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-        return rotatedSprite;
-    }
-
-    private Sprite FlipPieceVertically(Sprite piece)
-    {
-        // Create a new texture
-        var texture = new Texture2D((int)piece.rect.width, (int)piece.rect.height);
-        // Get the pixels of the sprite
-        var pixels = piece.texture.GetPixels((int)piece.rect.x, (int)piece.rect.y, (int)piece.rect.width, (int)piece.rect.height);
-        // Flip the pixels
-        for (var i = 0; i < texture.width; i++)
-        {
-            for (var j = 0; j < texture.height; j++)
-            {
-                texture.SetPixel(i, j, pixels[(texture.width - 1 - i) + j * texture.width]);
-            }
-        }
-        // Apply the pixels to the texture
-        texture.Apply();
-        // Create a new sprite
-        var flippedSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-        return flippedSprite;
-    }
     
-    private Sprite FlipPieceHorizontally(Sprite piece)
-    {
-        // Create a new texture
-        var texture = new Texture2D((int)piece.rect.width, (int)piece.rect.height);
-        // Get the pixels of the sprite
-        var pixels = piece.texture.GetPixels((int)piece.rect.x, (int)piece.rect.y, (int)piece.rect.width, (int)piece.rect.height);
-        // Flip the pixels
-        for (var i = 0; i < texture.width; i++)
-        {
-            for (var j = 0; j < texture.height; j++)
-            {
-                texture.SetPixel(i, j, pixels[i + (texture.height - 1 - j) * texture.width]);
-            }
-        }
-        // Apply the pixels to the texture
-        texture.Apply();
-        // Create a new sprite
-        var flippedSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-        return flippedSprite;
-    }
-
     private Sprite GetPiece(string pieceCode)
     {
         Debug.Log($"Getting piece {pieceCode} -----------------------------");
-        var up = pieceCode[0].ToString();
-        var right = pieceCode[1].ToString();
-        var down = pieceCode[2].ToString();
-        var left = pieceCode[3].ToString();
-        var possibleOrientations = new List<string>();
-        possibleOrientations.Add(up + right + down + left);
-        //possibleOrientations.Add(left + up + right + down);
-        //possibleOrientations.Add(down + left + up + right);
-        //possibleOrientations.Add(right + down + left + up);
-        //Debug.Log($"Possible orientations: {possibleOrientations[0]}, {possibleOrientations[1]}, {possibleOrientations[2]}, {possibleOrientations[3]}");
         string storedOrientation = "";
-        // find witch sprite stored in the dictionary
-        foreach (var orientation in possibleOrientations)
+        Sprite foundPiece;
+        // find sprite stored in the dictionary
+        if (puzzlePieces.ContainsKey(pieceCode))
         {
-            if (puzzlePieces.ContainsKey(orientation))
-            {
-                var foundPiecee =  puzzlePieces[orientation];
-                storedOrientation = orientation;
-                Debug.Log($"piece found for {pieceCode} storedOrientation: {storedOrientation}");
-                break;
-            }
+            foundPiece =  puzzlePieces[pieceCode];
+            storedOrientation = pieceCode;
+            Debug.Log($"piece found for {pieceCode} storedOrientation: {storedOrientation}");
         }
-
-        if (storedOrientation == "")
+        else
         {
             Debug.LogError($"No piece found for {pieceCode}");
             return GetPiece("0000");
         }
-        // Check which rotation is needed to match the pieceCode
-        var rotation = 0;
-        if (storedOrientation != pieceCode)
-        {
-            if (storedOrientation == left + up + right + down)
-            {
-                Debug.Log($"Need rotation: {270} - {left}{up}{right}{down} - 90 anticlockwise");
-                rotation = 270;
-            }
-
-            if (storedOrientation == down + left + up + right)
-            {
-                Debug.Log($"Need rotation: {180} - {down}{left}{up}{right}");
-                rotation = 180;
-            }
-
-            if (storedOrientation == right + down + left + up)
-            {
-                Debug.Log($"Need rotation: {90} - {right}{down}{left}{up}");
-                rotation = 90;
-            }
-        }
-        Debug.Log($"End. Need rotation: {rotation}");
-        // Rotate the sprite
-        Sprite piece;
-        //piece = RotatePiece(puzzlePieces[storedOrientation], rotation, rotation==270?false:true);
-        piece = puzzlePieces[storedOrientation];
-        Debug.Log($"End. Need rotation: {rotation}");
-        return piece;
+        return foundPiece;
     }
 
     private void GenerateJigsawPuzzleMatrix(int rows, int cols)
@@ -539,11 +293,5 @@ public class ePuzzleManager : MonoBehaviour
             }
         }
         print(matrix);
-    }
-
-    private int checkPieceCount = 0;
-    public void CheckPieces()
-    {
-        
     }
 }

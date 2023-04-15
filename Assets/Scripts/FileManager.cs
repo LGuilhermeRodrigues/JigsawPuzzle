@@ -12,14 +12,15 @@ public class FileManager : MonoBehaviour
     {
         CreateStartDirectories();
         CreateExampleFiles();
-        LoadConfigurationFile(true);
+        LoadConfigurationFile();
+        CreateWatcher();
     }
 
-    private void LoadConfigurationFile(bool createWatcher = false)
+    private void LoadConfigurationFile()
     {
         Debug.Log("Loading the configuration file");
-        // Check if Configuration.txt exists in the documents/BRAINN_XR folder
-        string currentPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR", "Configuration.txt");
+        // Check if Configuration.txt exists in the documents/BRAINN_XR_Data folder
+        string currentPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR_Data", "Configuration.txt");
         if (File.Exists(currentPath))
         {
             // Read the file
@@ -64,19 +65,19 @@ public class FileManager : MonoBehaviour
                     }
                 }
             }
-            
-            if (createWatcher)
-            {
-                Debug.Log("Create a watcher for the configuration file");
-                // Create a system watcher for the file (if it is modified, the game will reload the configuration)
-                FileSystemWatcher watcher = new FileSystemWatcher();
-                watcher.Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR");
-                watcher.NotifyFilter = NotifyFilters.LastWrite;
-                watcher.Filter = "Configuration.txt";
-                watcher.Changed += OnChanged;
-                watcher.EnableRaisingEvents = true;
-            }
         }
+    }
+
+    private void CreateWatcher()
+    {
+        Debug.Log("Create a watcher for the configuration file");
+        // Create a system watcher for the file (if it is modified, the game will reload the configuration)
+        FileSystemWatcher watcher = new FileSystemWatcher();
+        watcher.Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR_Data");
+        watcher.NotifyFilter = NotifyFilters.LastWrite;
+        watcher.Filter = "Configuration.txt";
+        watcher.Changed += OnChanged;
+        watcher.EnableRaisingEvents = true;
     }
 
     private void OnChanged(object sender, FileSystemEventArgs e)
@@ -92,13 +93,13 @@ public class FileManager : MonoBehaviour
         if (Directory.Exists(currentPath))
         {
             Debug.Log("Documents folder is accessible");
-            // Create a new folder (BRAINN_XR) in the documents folder if it doesn't exist already
-            currentPath = Path.Combine(currentPath, "BRAINN_XR");
+            // Create a new folder (BRAINN_XR_Data) in the documents folder if it doesn't exist already
+            currentPath = Path.Combine(currentPath, "BRAINN_XR_Data");
             if (!Directory.Exists(currentPath))
                 Directory.CreateDirectory(currentPath);
             brainnPath = currentPath;
             // Also, create a subfolder for the Jigsaw Puzzle
-            currentPath = Path.Combine(currentPath, "ePuzzle");
+            currentPath = Path.Combine(currentPath, "Images");
             if (!Directory.Exists(currentPath))
                 Directory.CreateDirectory(currentPath);
             jigsawPath = currentPath;
@@ -111,7 +112,7 @@ public class FileManager : MonoBehaviour
 
     private void CreateExampleFiles()
     {
-        // Move all example files from the Resources/ePuzzle folder to the Documents/BRAINN_XR folder
+        // Move all example files from the Resources/ePuzzle folder to the Documents/BRAINN_XR_Data folder
         string[] files = { "beach", "cat", "bike", "rainbow", "bob" };
         foreach (string file in files)
         {
@@ -128,8 +129,10 @@ public class FileManager : MonoBehaviour
                 }
             }
         }
-        // Load Configuration.txt file from the Resources folder and copy it to the Documents/BRAINN_XR folder
+        // Load Configuration.txt file from the Resources folder and copy it to the Documents/BRAINN_XR_Data folder
         var configuration = Resources.Load("Configuration") as TextAsset;
+        if (configuration != null)
+            File.WriteAllText(Path.Combine(brainnPath, "ConfigurationDefaultValues.txt"), configuration.text);
         if (!File.Exists(Path.Combine(brainnPath, "Configuration.txt")))
         {
             if (configuration != null)
