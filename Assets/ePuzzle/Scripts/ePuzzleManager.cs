@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro.Examples;
 using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using Sprite = UnityEngine.Sprite;
@@ -17,7 +19,9 @@ public class ePuzzleManager : MonoBehaviour
     [SerializeField] private GameObject _imageBackground;
     Vector2 _imageSize;
     [SerializeField] private GameObject _puzzlePiece;
-    [SerializeField] private GameObject _canvas;
+    [SerializeField] private GameObject _puzzleCanvas;
+    [SerializeField] private GameObject _piecesParent;
+    private List<GameObject> _pieces = new();
     [SerializeField] private List<Sprite> _puzzlePieces;
     private List<string> _puzzlePiecesNames = new();
     private Dictionary<string, Sprite> puzzlePieces = new();
@@ -45,6 +49,72 @@ public class ePuzzleManager : MonoBehaviour
             }
         }
         GenerateJigsawPuzzleMatrix(Configuration.ePuzzleRows, Configuration.ePuzzleColumns);
+        SetPiecesPosition();
+        MoveJigsawPieces();
+        //StartCoroutine(MovePiecesPlaceholder());
+    }
+
+    private IEnumerator MovePiecesPlaceholder()
+    {
+        yield return new WaitForSeconds(3);
+        switch (Configuration.ePuzzlePiecesPosition)
+        {
+            case (Configuration.Position.UpLeft):
+                _piecesParent.transform.localPosition = new Vector3(-250, 125, 0);
+                break;
+            case Configuration.Position.UpRight:
+                _piecesParent.transform.localPosition = new Vector3(250, 125, 0);
+                break;
+            case Configuration.Position.DownLeft:
+                _piecesParent.transform.localPosition = new Vector3(-250, -125, 0);
+                break;
+            case Configuration.Position.DownRight:
+                _piecesParent.transform.localPosition = new Vector3(250, -125, 0);
+                break;
+        }
+    }
+
+    private void SetPiecesPosition()
+    {
+        foreach (var p in _pieces) { p.GetComponent<mouseDrag>().SetInitialPosition(); }
+    }
+
+    private void MoveJigsawPieces()
+    {
+        foreach (var p in _pieces)
+        {
+            p.transform.SetParent(_piecesParent.transform);
+        }
+        switch (Configuration.ePuzzleImagePosition)
+        {
+            case (Configuration.Position.UpLeft):
+                _imageViewportParent.transform.localPosition = new Vector3(-250, 125, 0);
+                break;
+            case Configuration.Position.UpRight:
+                _imageViewportParent.transform.localPosition = new Vector3(250, 125, 0);
+                break;
+            case Configuration.Position.DownLeft:
+                _imageViewportParent.transform.localPosition = new Vector3(-250, -125, 0);
+                break;
+            case Configuration.Position.DownRight:
+                _imageViewportParent.transform.localPosition = new Vector3(250, -125, 0);
+                break;
+        }
+        switch (Configuration.ePuzzleImagePosition)
+        {
+            case (Configuration.Position.UpLeft):
+                _piecesParent.transform.localPosition = new Vector3(-250, 125, 0);
+                break;
+            case Configuration.Position.UpRight:
+                _piecesParent.transform.localPosition = new Vector3(250, 125, 0);
+                break;
+            case Configuration.Position.DownLeft:
+                _piecesParent.transform.localPosition = new Vector3(-250, -125, 0);
+                break;
+            case Configuration.Position.DownRight:
+                _piecesParent.transform.localPosition = new Vector3(250, -125, 0);
+                break;
+        }
     }
 
     private void SetBackgroundTransparency()
@@ -67,7 +137,9 @@ public class ePuzzleManager : MonoBehaviour
         {
             for (var j = 0; j < Configuration.ePuzzleRows; j++)
             {
-                var piece = Instantiate(_puzzlePiece, _canvas.transform);
+                var piece = Instantiate(_puzzlePiece, _puzzleCanvas.transform);
+                
+                _pieces.Add(piece);
                 
                 // Set the name of the piece
                 piece.name = $"Piece {j} {i}";
@@ -85,8 +157,8 @@ public class ePuzzleManager : MonoBehaviour
                 
                 // Set the size of the piece
                 piece.GetComponent<RectTransform>().sizeDelta = new Vector2(
-                    1.55f*_imageSize.x / Configuration.ePuzzleColumns, 
-                    1.55f*_imageSize.y / Configuration.ePuzzleRows);
+                    1.56f*_imageSize.x / Configuration.ePuzzleColumns, 
+                    1.56f*_imageSize.y / Configuration.ePuzzleRows);
                 
                 // Set the position of the piece
                 piece.GetComponent<RectTransform>().localPosition = new Vector2(
@@ -100,7 +172,7 @@ public class ePuzzleManager : MonoBehaviour
                 piece.transform.localPosition = localPosition;
                 
                 // offset problem
-                var offset = (0.55f*_imageSize.x / Configuration.ePuzzleColumns) /2;
+                var offset = (0.56f*_imageSize.x / Configuration.ePuzzleColumns) /2;
                 localPosition = new Vector3(
                     localPosition.x - offset,
                     localPosition.y + offset,
@@ -108,7 +180,7 @@ public class ePuzzleManager : MonoBehaviour
                 piece.transform.localPosition = localPosition;
                 boxCollider.offset = new Vector2(boxCollider.offset.x + offset, boxCollider.offset.y - offset);
                 
-                var pieceViewport = Instantiate(_imageViewportParent, _canvas.transform);
+                var pieceViewport = Instantiate(_imageViewportParent, _puzzleCanvas.transform);
                 pieceViewport.transform.parent = piece.transform;
             }
         }

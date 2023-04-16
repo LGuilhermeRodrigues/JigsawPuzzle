@@ -10,12 +10,22 @@ public static class Configuration
     public static string ePuzzleImage = "cat";
     public static float ePuzzleImageTransparency = 0.4f;
     public static Color ePuzzleBackgroundColor = new Color(0.25f, 0.25f, 0.25f, 1f);
-
+    public static Position ePuzzleImagePosition = Position.UpLeft;
+    public static Position ePuzzlePiecesPosition = Position.DownRight;
+    
     public enum AspectRatio
     {
         Square,
         Landscape,
         Portrait,
         Widescreen
+    }
+
+    public enum Position
+    {
+        UpLeft,
+        UpRight,
+        DownLeft,
+        DownRight
     }
 }
