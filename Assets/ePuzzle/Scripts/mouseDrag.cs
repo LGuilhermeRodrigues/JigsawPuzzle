@@ -15,13 +15,14 @@ public class mouseDrag : MonoBehaviour
     private Vector2 BottomRightCorner = new Vector2(-2.3f, -2f);
     private bool initialMoving = false;
     private float deltaTimeSum = 0;
+    private bool stayFixed = true;
     
     private void Start()
     {
         //initialPosition = transform.position;
-        TopLeftCorner = GameObject.Find("TopLeftCorner").transform.position;
+        TopLeftCorner = GameObject.Find("TopLeftCorner").transform.localPosition;
         Debug.Log($"TopLeftCorner: {TopLeftCorner}");
-        BottomRightCorner = GameObject.Find("BottomRightCorner").transform.position;
+        BottomRightCorner = GameObject.Find("BottomRightCorner").transform.localPosition;
         Debug.Log($"BottomRightCorner: {BottomRightCorner}");
         StartCoroutine(SpreadPiece());
     }
@@ -44,28 +45,34 @@ public class mouseDrag : MonoBehaviour
     {
         if (initialMoving)
         {
-            if (deltaTimeSum > 3)
+            if (deltaTimeSum > 5)
             {
-                transform.position = endPosition;
+                stayFixed = false;
+                transform.localPosition = endPosition;
                 initialMoving = false;
             }
             deltaTimeSum += Time.deltaTime;
-            transform.position = 
-                Vector3.MoveTowards(transform.position, endPosition,
-                    2 * Time.deltaTime);
+            transform.localPosition = 
+                Vector3.MoveTowards(transform.localPosition, endPosition,
+                    60 * Time.deltaTime);
         }
         
-        if (!gameObject.name.Equals("Piece 0 0"))
+        if (stayFixed)
         {
             return;
         }
+        /*
         if (isCloseToInitialPosition())
         {
-            //transform.position = initialPosition;
+            transform.localPosition = initialPosition;
         }
-        
-        var distance = Vector2.Distance(transform.position, initialPosition);  
-        Debug.Log($"distance: {distance} position: {transform.position} localPosition = {transform.localPosition} initialPosition: {initialPosition}");
+        */
+        var distance = Vector2.Distance(
+            Camera.main.WorldToScreenPoint(transform.position), initialPosition);
+        if (gameObject.name.Equals("Piece 0 0"))
+        {
+            Debug.Log($"distance: {distance} position: {transform.position} transformPoint: {transform.TransformPoint(transform.localPosition)} initialPosition: {initialPosition} localPosition = {transform.localPosition}");
+        }
         
     }
 
@@ -98,15 +105,22 @@ public class mouseDrag : MonoBehaviour
     bool isCloseToInitialPosition()
     {
         //var respawn = GetComponent<Respawn>();
-        var distance = Vector2.Distance(transform.position, initialPosition);   
-        //Debug.Log(distance);
+        var distance = Vector2.Distance(transform.TransformPoint(transform.localPosition), initialPosition);
+        if (gameObject.name.Equals("Piece 0 0"))
+        {
+            //Debug.Log(distance);
+        }
         //return distance < 2f;
         return false;
     }
 
     public void SetInitialPosition()
     {
-        initialPosition = transform.position;
+        initialPosition = Camera.main.WorldToScreenPoint(transform.position);
+        if (gameObject.name.Equals("Piece 0 0"))
+        {
+            Debug.Log($"initialPosition: {initialPosition}");
+        }
         // set endPosition to be random in the range of the corners
         /*endPosition = new Vector2(
             UnityEngine.Random.Range(TopLeftCorner.x, BottomRightCorner.x),

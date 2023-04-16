@@ -21,6 +21,8 @@ public class ePuzzleManager : MonoBehaviour
     [SerializeField] private GameObject _puzzlePiece;
     [SerializeField] private GameObject _puzzleCanvas;
     [SerializeField] private GameObject _piecesParent;
+    private Vector3 _piecesParentPosition;
+    private bool _isMovingParentPosition = false;
     private List<GameObject> _pieces = new();
     [SerializeField] private List<Sprite> _puzzlePieces;
     private List<string> _puzzlePiecesNames = new();
@@ -49,9 +51,23 @@ public class ePuzzleManager : MonoBehaviour
             }
         }
         GenerateJigsawPuzzleMatrix(Configuration.ePuzzleRows, Configuration.ePuzzleColumns);
-        SetPiecesPosition();
         MoveJigsawPieces();
-        //StartCoroutine(MovePiecesPlaceholder());
+        SetPiecesPosition();
+        StartCoroutine(MovePiecesPlaceholder());
+    }
+
+    private void Update()
+    {
+        if (_isMovingParentPosition)
+        {
+            _piecesParent.transform.localPosition = Vector3.MoveTowards(
+                _piecesParent.transform.localPosition,
+            _piecesParentPosition, 120 * Time.deltaTime);
+            if (_piecesParent.transform.localPosition == _piecesParentPosition)
+            {
+                _isMovingParentPosition = false;
+            }
+        }
     }
 
     private IEnumerator MovePiecesPlaceholder()
@@ -60,18 +76,19 @@ public class ePuzzleManager : MonoBehaviour
         switch (Configuration.ePuzzlePiecesPosition)
         {
             case (Configuration.Position.UpLeft):
-                _piecesParent.transform.localPosition = new Vector3(-250, 125, 0);
+                _piecesParentPosition = new Vector3(-250, 125, 0);
                 break;
             case Configuration.Position.UpRight:
-                _piecesParent.transform.localPosition = new Vector3(250, 125, 0);
+                _piecesParentPosition = new Vector3(250, 125, 0);
                 break;
             case Configuration.Position.DownLeft:
-                _piecesParent.transform.localPosition = new Vector3(-250, -125, 0);
+                _piecesParentPosition = new Vector3(-250, -125, 0);
                 break;
             case Configuration.Position.DownRight:
-                _piecesParent.transform.localPosition = new Vector3(250, -125, 0);
+                _piecesParentPosition = new Vector3(250, -125, 0);
                 break;
         }
+        _isMovingParentPosition = true;
     }
 
     private void SetPiecesPosition()
