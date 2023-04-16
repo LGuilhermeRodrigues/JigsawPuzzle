@@ -68,10 +68,10 @@ public class mouseDrag : MonoBehaviour
         }
         */
         var distance = Vector2.Distance(
-            Camera.main.WorldToScreenPoint(transform.position), initialPosition);
+            transform.position, initialPosition);
         if (gameObject.name.Equals("Piece 0 0"))
         {
-            Debug.Log($"distance: {distance} position: {transform.position} transformPoint: {transform.TransformPoint(transform.localPosition)} initialPosition: {initialPosition} localPosition = {transform.localPosition}");
+            Debug.Log($"distance: {distance} position: {transform.position} initialPosition: {initialPosition} localPosition = {transform.localPosition}");
         }
         
     }
@@ -116,7 +116,7 @@ public class mouseDrag : MonoBehaviour
 
     public void SetInitialPosition()
     {
-        initialPosition = Camera.main.WorldToScreenPoint(transform.position);
+        initialPosition = transform.position;
         if (gameObject.name.Equals("Piece 0 0"))
         {
             Debug.Log($"initialPosition: {initialPosition}");
