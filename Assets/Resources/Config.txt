@@ -1,11 +1,14 @@
 BRAINN_XR CursorSensitivity No
--- Options = No
+-- Options = Yes,No
 
 BRAINN_XR SensitivityLeft 50
 BRAINN_XR SensitivityRight 50
 BRAINN_XR SensitivityUp 50
 BRAINN_XR SensitivityDown 50
 -- Options = maximum distance from the shoulder joint in centimeters
+
+ePuzzle SocketSize 0.5
+-- Options = Any number; e.g. 1 (Big), 0.5 (Medium), 0.25 (Small)
 
 ePuzzle Rows 3
 ePuzzle Columns 3

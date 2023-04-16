@@ -12,6 +12,7 @@ public static class Configuration
     public static Color ePuzzleBackgroundColor = new Color(0.25f, 0.25f, 0.25f, 1f);
     public static Position ePuzzleImagePosition = Position.UpLeft;
     public static Position ePuzzlePiecesPosition = Position.DownRight;
+    public static float ePuzzleSocketSize = 0.5f;
     
     public enum AspectRatio
     {

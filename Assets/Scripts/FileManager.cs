@@ -62,6 +62,9 @@ public class FileManager : MonoBehaviour
                             string[] rgb = words[2].Split(',');
                             Configuration.ePuzzleBackgroundColor = new Color(float.Parse(rgb[0])/255, float.Parse(rgb[1])/255, float.Parse(rgb[2])/255);
                             break;
+                        case "ePuzzleSocketSize":
+                            Configuration.ePuzzleSocketSize = float.Parse(words[2]);
+                            break;
                     }
                 }
             }
@@ -137,6 +140,12 @@ public class FileManager : MonoBehaviour
         {
             if (configuration != null)
                 File.WriteAllText(Path.Combine(brainnPath, "Config.txt"), configuration.text);
+        }
+        else
+        {
+#if UNITY_EDITOR
+            File.WriteAllText(Path.Combine(brainnPath, "Config.txt"), configuration.text);
+#endif
         }
     }
 }

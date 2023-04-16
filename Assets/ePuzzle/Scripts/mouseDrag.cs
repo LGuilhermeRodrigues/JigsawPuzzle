@@ -61,17 +61,17 @@ public class mouseDrag : MonoBehaviour
         {
             return;
         }
-        /*
+        
         if (isCloseToInitialPosition())
         {
-            transform.localPosition = initialPosition;
+            transform.position = initialPosition;
         }
-        */
+        
         var distance = Vector2.Distance(
             transform.position, initialPosition);
         if (gameObject.name.Equals("Piece 0 0"))
         {
-            Debug.Log($"distance: {distance} position: {transform.position} initialPosition: {initialPosition} localPosition = {transform.localPosition}");
+            //Debug.Log($"distance: {distance} position: {transform.position} initialPosition: {initialPosition} localPosition = {transform.localPosition}");
         }
         
     }
@@ -105,13 +105,10 @@ public class mouseDrag : MonoBehaviour
     bool isCloseToInitialPosition()
     {
         //var respawn = GetComponent<Respawn>();
-        var distance = Vector2.Distance(transform.TransformPoint(transform.localPosition), initialPosition);
-        if (gameObject.name.Equals("Piece 0 0"))
-        {
-            //Debug.Log(distance);
-        }
-        //return distance < 2f;
-        return false;
+        var distance =
+            Vector2.Distance(
+                transform.position, initialPosition);
+        return distance < Configuration.ePuzzleSocketSize;
     }
 
     public void SetInitialPosition()
