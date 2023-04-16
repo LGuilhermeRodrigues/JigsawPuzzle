@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/ePuzzle.unity
+    path: Assets/ePuzzle/Scenes/ePuzzle.unity
     guid: 4829b4bff5176fe4a98b503c210b90ce
   m_configObjects: {}

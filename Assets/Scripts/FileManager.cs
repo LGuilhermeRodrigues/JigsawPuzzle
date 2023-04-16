@@ -19,14 +19,12 @@ public class FileManager : MonoBehaviour
     private void LoadConfigurationFile()
     {
         Debug.Log("Loading the configuration file");
-        // Check if Configuration.txt exists in the documents/BRAINN_XR_Data folder
-        string currentPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR_Data", "Configuration.txt");
+        // Check if Config.txt exists in the documents/BRAINN_XR_Data folder
+        string currentPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR_Data", "Config.txt");
         if (File.Exists(currentPath))
         {
             // Read the file
             string[] lines = File.ReadAllLines(currentPath);
-            
-            string[] variablesName = { "ePuzzleHorizontalSize", "ePuzzleVerticalSize","ePuzzleAspectRatio", "ePuzzleImage", "ePuzzleImageTransparency" };
             
             // Each line have the format: "gameName configName Value" (e.g. "ePuzzle HorizontalSize 3")
             foreach (string line in lines)
@@ -37,31 +35,33 @@ public class FileManager : MonoBehaviour
                     // Concat the first two words to get the variable name
                     string variableName = words[0] + words[1];
                     // Check if the variable name is in the list of variables
-                    if (Array.IndexOf(variablesName, variableName) != -1)
+                    // Set the value of the variable
+                    switch (variableName)
                     {
-                        // Set the value of the variable
-                        switch (variableName)
-                        {
-                            case "ePuzzleHorizontalSize":
-                                Configuration.ePuzzleHorizontalSize = int.Parse(words[2]);
-                                break;
-                            case "ePuzzleVerticalSize":
-                                Configuration.ePuzzleVerticalSize = int.Parse(words[2]);
-                                break;
-                            case "ePuzzleAspectRatio":
-                                // parse string to enum
-                                Debug.Log("Parsing string to enum");
-                                Enum.TryParse(words[2], out Configuration.AspectRatio aspectRatio);
-                                Debug.Log($"Parsed to {aspectRatio.ToString()}");
-                                Configuration.ePuzzleAspectRatio = aspectRatio;
-                                break;
-                            case "ePuzzleImage":
-                                Configuration.ePuzzleImage = words[2];
-                                break;
-                            case "ePuzzleImageTransparency":
-                                Configuration.ePuzzleImageTransparency = float.Parse(words[2]);
-                                break;
-                        }
+                        case "ePuzzleColumns":
+                            Configuration.ePuzzleColumns = int.Parse(words[2]);
+                            break;
+                        case "ePuzzleRows":
+                            Configuration.ePuzzleRows = int.Parse(words[2]);
+                            break;
+                        case "ePuzzleAspectRatio":
+                            // parse string to enum
+                            Debug.Log("Parsing string to enum");
+                            Enum.TryParse(words[2], out Configuration.AspectRatio aspectRatio);
+                            Debug.Log($"Parsed to {aspectRatio.ToString()}");
+                            Configuration.ePuzzleAspectRatio = aspectRatio;
+                            break;
+                        case "ePuzzleImage":
+                            Configuration.ePuzzleImage = words[2];
+                            break;
+                        case "ePuzzleImageTransparency":
+                            Configuration.ePuzzleImageTransparency = float.Parse(words[2]);
+                            break;
+                        case "ePuzzleBackgroundColor":
+                            // parse r,g,b string to color
+                            string[] rgb = words[2].Split(',');
+                            Configuration.ePuzzleBackgroundColor = new Color(float.Parse(rgb[0])/255, float.Parse(rgb[1])/255, float.Parse(rgb[2])/255);
+                            break;
                     }
                 }
             }
@@ -75,7 +75,7 @@ public class FileManager : MonoBehaviour
         FileSystemWatcher watcher = new FileSystemWatcher();
         watcher.Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BRAINN_XR_Data");
         watcher.NotifyFilter = NotifyFilters.LastWrite;
-        watcher.Filter = "Configuration.txt";
+        watcher.Filter = "Config.txt";
         watcher.Changed += OnChanged;
         watcher.EnableRaisingEvents = true;
     }
@@ -129,14 +129,14 @@ public class FileManager : MonoBehaviour
                 }
             }
         }
-        // Load Configuration.txt file from the Resources folder and copy it to the Documents/BRAINN_XR_Data folder
-        var configuration = Resources.Load("Configuration") as TextAsset;
+        // Load Config.txt file from the Resources folder and copy it to the Documents/BRAINN_XR_Data folder
+        var configuration = Resources.Load("Config") as TextAsset;
         if (configuration != null)
-            File.WriteAllText(Path.Combine(brainnPath, "ConfigurationDefaultValues.txt"), configuration.text);
-        if (!File.Exists(Path.Combine(brainnPath, "Configuration.txt")))
+            File.WriteAllText(Path.Combine(brainnPath, "ConfigDefaultValues.txt"), configuration.text);
+        if (!File.Exists(Path.Combine(brainnPath, "Config.txt")))
         {
             if (configuration != null)
-                File.WriteAllText(Path.Combine(brainnPath, "Configuration.txt"), configuration.text);
+                File.WriteAllText(Path.Combine(brainnPath, "Config.txt"), configuration.text);
         }
     }
 }

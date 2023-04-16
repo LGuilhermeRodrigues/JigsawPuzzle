@@ -1,0 +1,24 @@
+BRAINN_XR CursorSensitivity No
+-- Options = No
+
+BRAINN_XR SensitivityLeft 50
+BRAINN_XR SensitivityRight 50
+BRAINN_XR SensitivityUp 50
+BRAINN_XR SensitivityDown 50
+-- Options = maximum distance from the shoulder joint in centimeters
+
+ePuzzle Rows 3
+ePuzzle Columns 3
+-- Options = 2, 3, 4, 5, 6, 7, 8, 9, 10, etc
+
+ePuzzle AspectRatio Square
+-- Options = Square, Landscape, Portrait, Widescreen
+
+ePuzzle Image cat
+-- Options = Any image name in folder Documents\BRAINN_XR_Data\Images
+
+ePuzzle ImageTransparency 0.4
+-- Options = Any number from 0 (fully transparent) to 1 (No transparency)
+
+ePuzzle BackgroundColor 65,65,65
+-- Options = Any RGB color code from 0,0,0 to 255,255,255

@@ -4,11 +4,12 @@ using UnityEngine;
 
 public static class Configuration
 {
-    public static int ePuzzleHorizontalSize = 3;
-    public static int ePuzzleVerticalSize = 3;
+    public static int ePuzzleColumns = 3;
+    public static int ePuzzleRows = 3;
     public static AspectRatio ePuzzleAspectRatio = AspectRatio.Square;
-    public static string ePuzzleImage = "beach";
-    public static float ePuzzleImageTransparency = 0.5f;
+    public static string ePuzzleImage = "cat";
+    public static float ePuzzleImageTransparency = 0.4f;
+    public static Color ePuzzleBackgroundColor = new Color(0.25f, 0.25f, 0.25f, 1f);
 
     public enum AspectRatio
     {

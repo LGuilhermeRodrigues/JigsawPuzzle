@@ -29,6 +29,7 @@ public class ePuzzleManager : MonoBehaviour
         LoadImage();
         CreatePieces();
         SetBackgroundTransparency();
+        SetBackgroundColor();
         // Create the dictionary with the puzzle pieces to get them by code
         foreach (var puzzlePiece in _puzzlePieces)
         {
@@ -43,7 +44,7 @@ public class ePuzzleManager : MonoBehaviour
                 Debug.Log($"List: The name {puzzlePiece.name} is already in the list");
             }
         }
-        GenerateJigsawPuzzleMatrix(Configuration.ePuzzleHorizontalSize, Configuration.ePuzzleVerticalSize);
+        GenerateJigsawPuzzleMatrix(Configuration.ePuzzleRows, Configuration.ePuzzleColumns);
     }
 
     private void SetBackgroundTransparency()
@@ -52,22 +53,29 @@ public class ePuzzleManager : MonoBehaviour
         _puzzleImage.GetComponent<Image>().color = new Color(1, 1, 1, Configuration.ePuzzleImageTransparency);
     }
 
+    private void SetBackgroundColor()
+    {
+        // set the background color of the main camera
+        Camera myCamera = Camera.main;
+        myCamera.backgroundColor = Configuration.ePuzzleBackgroundColor;
+    }
+
     private void CreatePieces()
     {
         // create a new game object for each piece
-        for (var i = 0; i < Configuration.ePuzzleHorizontalSize; i++)
+        for (var i = 0; i < Configuration.ePuzzleColumns; i++)
         {
-            for (var j = 0; j < Configuration.ePuzzleVerticalSize; j++)
+            for (var j = 0; j < Configuration.ePuzzleRows; j++)
             {
                 var piece = Instantiate(_puzzlePiece, _canvas.transform);
                 
                 // Set the name of the piece
-                piece.name = $"Piece {i} {j}";
+                piece.name = $"Piece {j} {i}";
                 
                 // Set the size of the piece
                 piece.GetComponent<RectTransform>().sizeDelta = new Vector2(
-                    1*_imageSize.x / Configuration.ePuzzleHorizontalSize, 
-                    1*_imageSize.y / Configuration.ePuzzleVerticalSize);
+                    1*_imageSize.x / Configuration.ePuzzleColumns, 
+                    1*_imageSize.y / Configuration.ePuzzleRows);
                 
                 // Resize the boxCollider
                 BoxCollider2D boxCollider = piece.GetComponent<BoxCollider2D>();
@@ -77,13 +85,13 @@ public class ePuzzleManager : MonoBehaviour
                 
                 // Set the size of the piece
                 piece.GetComponent<RectTransform>().sizeDelta = new Vector2(
-                    1.55f*_imageSize.x / Configuration.ePuzzleHorizontalSize, 
-                    1.55f*_imageSize.y / Configuration.ePuzzleVerticalSize);
+                    1.55f*_imageSize.x / Configuration.ePuzzleColumns, 
+                    1.55f*_imageSize.y / Configuration.ePuzzleRows);
                 
                 // Set the position of the piece
                 piece.GetComponent<RectTransform>().localPosition = new Vector2(
-                    _imageSize.x / Configuration.ePuzzleHorizontalSize * i,
-                    -_imageSize.y / Configuration.ePuzzleVerticalSize * j);
+                    _imageSize.x / Configuration.ePuzzleColumns * i,
+                    -_imageSize.y / Configuration.ePuzzleRows * j);
                 var localPosition = piece.transform.localPosition;
                 localPosition = new Vector3(
                     localPosition.x+250-_imageSize.x/2, 
@@ -92,7 +100,7 @@ public class ePuzzleManager : MonoBehaviour
                 piece.transform.localPosition = localPosition;
                 
                 // offset problem
-                var offset = (0.55f*_imageSize.x / Configuration.ePuzzleHorizontalSize) /2;
+                var offset = (0.55f*_imageSize.x / Configuration.ePuzzleColumns) /2;
                 localPosition = new Vector3(
                     localPosition.x - offset,
                     localPosition.y + offset,
@@ -202,7 +210,7 @@ public class ePuzzleManager : MonoBehaviour
         else
         {
             Debug.LogError($"No piece found for {pieceCode}");
-            return GetPiece("0000");
+            return null;
         }
         return foundPiece;
     }
@@ -286,12 +294,12 @@ public class ePuzzleManager : MonoBehaviour
                 var pieceCode = matrix[i, j];
                 var piece = GetPiece(pieceCode);
                 // Find the game object that represents the piece in the format "Piece i j" (e.g. Piece 0 0)
-                var pieceName = "Piece " + j + " " + i;
+                var pieceName = "Piece " + i + " " + j;
                 var pieceObject = GameObject.Find(pieceName);
                 // Set the sprite of the piece
                 pieceObject.GetComponent<Image>().sprite = piece;
             }
         }
-        print(matrix);
+        //print(matrix);
     }
 }
